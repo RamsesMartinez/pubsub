@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.fygsolutions.test.pubsub;
+package com.test.pubsub;
 
 
 // [START pubsub_quickstart_create_subscription]
@@ -44,21 +44,39 @@ public class CreatePullSubscriptionExample_02 {
     String topicId = "my-topic";
 
     // Your subscription ID eg. "my-sub"
-    String subscriptionId = "my-sub";
+    String subscriptionIdA = "my-sub-a";
+    String subscriptionIdB = "my-sub-b";
 
     ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
 
-    // Create a new subscription
-    ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(
-        projectId, subscriptionId);
+    // Create a new subscription for A
+    ProjectSubscriptionName subscriptionNameA = ProjectSubscriptionName.of(
+        projectId, subscriptionIdA);
     try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
       // create a pull subscription with default acknowledgement deadline (= 10 seconds)
-      Subscription subscription =
+      Subscription subscriptionA =
           subscriptionAdminClient.createSubscription(
-              subscriptionName, topicName, PushConfig.getDefaultInstance(), 0);
+              subscriptionNameA, topicName, PushConfig.getDefaultInstance(), 0);
       System.out.printf(
-          "Subscription %s:%s created.\n",
-          subscriptionName.getProject(), subscriptionName.getSubscription());
+          "Subscription A %s:%s created.\n",
+          subscriptionNameA.getProject(), subscriptionNameA.getSubscription());
+    } catch (ApiException e) {
+      // example : code = ALREADY_EXISTS(409) implies subscription already exists
+      System.out.print(e.getStatusCode().getCode());
+      System.out.print(e.isRetryable());
+    }
+    
+    // Create a new subscription for B
+    ProjectSubscriptionName subscriptionNameB = ProjectSubscriptionName.of(
+        projectId, subscriptionIdB);
+    try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+      // create a pull subscription with default acknowledgement deadline (= 10 seconds)
+      Subscription subscriptionB =
+          subscriptionAdminClient.createSubscription(
+              subscriptionNameB, topicName, PushConfig.getDefaultInstance(), 0);
+      System.out.printf(
+          "Subscription B %s:%s created.\n",
+          subscriptionNameB.getProject(), subscriptionNameB.getSubscription());
     } catch (ApiException e) {
       // example : code = ALREADY_EXISTS(409) implies subscription already exists
       System.out.print(e.getStatusCode().getCode());
