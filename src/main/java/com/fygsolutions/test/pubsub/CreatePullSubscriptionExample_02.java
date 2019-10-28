@@ -19,15 +19,24 @@ package com.fygsolutions.test.pubsub;
 
 // [START pubsub_quickstart_create_subscription]
 
+import com.google.api.gax.core.CredentialsProvider;
+import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.api.gax.rpc.ApiException;
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
+import com.google.cloud.pubsub.v1.SubscriptionAdminSettings;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.Subscription;
 
+import java.io.FileInputStream;
+
 public class CreatePullSubscriptionExample_02 {
+  private static final String PROJECT_ID = "fintech-desarrollo-mx";
+  private static final String TOPIC_ID = "vta-topic-test";
+  private static final String SUBSCRIPTION_ID = "vta-pull-subscription";
 
   /**
    * Create a pull subscription.
@@ -36,22 +45,21 @@ public class CreatePullSubscriptionExample_02 {
    * @throws Exception exception thrown if operation is unsuccessful
    */
   public static void main(String... args) throws Exception {
+    ProjectTopicName topicName = ProjectTopicName.of(PROJECT_ID, TOPIC_ID);
 
-    // Your Google Cloud Platform project ID
-    String projectId = ServiceOptions.getDefaultProjectId();
-
-    // Your topic ID, eg. "my-topic"
-    String topicId = "my-topic";
-
-    // Your subscription ID eg. "my-sub"
-    String subscriptionId = "my-sub";
-
-    ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
+    CredentialsProvider credentialsProvider = FixedCredentialsProvider.create(
+            ServiceAccountCredentials.fromStream(
+                    new FileInputStream("C:\\fintech-desarrollo-mx-pubsub.json")));
 
     // Create a new subscription
     ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(
-        projectId, subscriptionId);
-    try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+            PROJECT_ID, SUBSCRIPTION_ID);
+
+    try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create(
+            SubscriptionAdminSettings.newBuilder()
+                    .setCredentialsProvider(credentialsProvider)
+                    .build()
+    )) {
       // create a pull subscription with default acknowledgement deadline (= 10 seconds)
       Subscription subscription =
           subscriptionAdminClient.createSubscription(
@@ -62,6 +70,7 @@ public class CreatePullSubscriptionExample_02 {
     } catch (ApiException e) {
       // example : code = ALREADY_EXISTS(409) implies subscription already exists
       System.out.print(e.getStatusCode().getCode());
+      System.out.println(" ");
       System.out.print(e.isRetryable());
     }
 

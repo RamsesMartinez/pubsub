@@ -20,36 +20,62 @@ package com.fygsolutions.test.pubsub;
 // [START pubsub_quickstart_create_topic]
 // Imports the Google Cloud client library
 
+import com.google.api.gax.core.CredentialsProvider;
+import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.api.gax.rpc.ApiException;
+import com.google.api.gax.rpc.PermissionDeniedException;
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
+import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.pubsub.v1.ProjectTopicName;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class CreateTopic_01 {
+  private static final String PROJECT_ID = "fintech-desarrollo-mx";
+  private static final String TOPIC_ID = "vta-topic-test";
+
+  public static void main(String... args) throws IOException {
+    createTopic();
+  }
 
   /**
    * Create a topic.
    *
-   * @param args topicId
-   * @throws Exception exception thrown if operation is unsuccessful
+   * @throws IOException exception thrown if operation is unsuccessful
    */
-  public static void main(String... args) throws Exception {
-
-    // Your Google Cloud Platform project ID
-    String projectId = ServiceOptions.getDefaultProjectId();
-
-    // Your topic ID, eg. "my-topic"
-    String topicId = "my-topic";
+  private static void createTopic() throws IOException {
+    CredentialsProvider credentialsProvider = FixedCredentialsProvider.create(
+            ServiceAccountCredentials.fromStream(
+                    new FileInputStream("C:\\fintech-desarrollo-mx-pubsub.json")));
 
     // Create a new topic
-    ProjectTopicName topic = ProjectTopicName.of(projectId, topicId);
-    try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-      topicAdminClient.createTopic(topic);
-      System.out.printf("Topic %s:%s created.\n", topic.getProject(), topic.getTopic());
+    ProjectTopicName projectTopicName = ProjectTopicName.of(PROJECT_ID, TOPIC_ID);
+
+    try (TopicAdminClient topicAdminClient = TopicAdminClient.create(
+            TopicAdminSettings.newBuilder()
+                    .setCredentialsProvider(credentialsProvider)
+                    .build()
+    )) {
+      topicAdminClient.createTopic(projectTopicName);
+      System.out.printf("Topic %s:%s created.\n", projectTopicName.getProject(), projectTopicName.getTopic());
     } catch (ApiException e) {
       // example : code = ALREADY_EXISTS(409) implies topic already exists
-      System.out.print(e.getStatusCode().getCode());
-      System.out.print(e.isRetryable());
+      System.out.println(e.getStatusCode().getCode());
+      System.out.println(e.isRetryable());
+      System.out.println("Intentando eliminar Topico");
+      try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+        ProjectTopicName topicName = ProjectTopicName.of(PROJECT_ID, TOPIC_ID);
+        System.out.println(topicName);
+        topicAdminClient.deleteTopic(topicName);
+        System.out.println("Creando tópico después de borrado " + topicName.toString());
+        createTopic();
+      } catch (PermissionDeniedException ex) {
+        System.out.println(ex.getMessage());
+      }
     }
   }
 }

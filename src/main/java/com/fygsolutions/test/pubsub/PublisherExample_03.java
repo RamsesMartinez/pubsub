@@ -21,35 +21,40 @@ package com.fygsolutions.test.pubsub;
 
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
-import com.google.cloud.ServiceOptions;
+import com.google.api.gax.core.CredentialsProvider;
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PublisherExample_03 {
-
-  // use the default project id
-  private static final String PROJECT_ID = ServiceOptions.getDefaultProjectId();
+  private static final String PROJECT_ID = "fintech-desarrollo-mx";
+  private static final String TOPIC_ID = "vta-topic-test";
 
   /** Publish messages to a topic.
    * @param args topic name, number of messages
    */
   public static void main(String... args) throws Exception {
-    // topic id, eg. "my-topic"
-    String topicId = "my-topic";
     // Many number
     int messageCount = 5;
-    ProjectTopicName topicName = ProjectTopicName.of(PROJECT_ID, topicId);
+    ProjectTopicName topicName = ProjectTopicName.of(PROJECT_ID, TOPIC_ID);
+    CredentialsProvider credentialsProvider = FixedCredentialsProvider.create(
+            ServiceAccountCredentials.fromStream(
+                    new FileInputStream("C:\\fintech-desarrollo-mx-pubsub.json")));
     Publisher publisher = null;
     List<ApiFuture<String>> futures = new ArrayList<>();
 
     try {
       // Create a publisher instance with default settings bound to the topic
-      publisher = Publisher.newBuilder(topicName).build();
+      publisher = Publisher.newBuilder(topicName)
+              .setCredentialsProvider(credentialsProvider)
+              .build();
 
       for (int i = 0; i < messageCount; i++) {
         String message = "message-" + i;
@@ -57,8 +62,8 @@ public class PublisherExample_03 {
         // convert message to bytes
         ByteString data = ByteString.copyFromUtf8(message);
         PubsubMessage pubsubMessage = PubsubMessage.newBuilder()
-            .setData(data)
-            .build();
+                .setData(data)
+                .build();
 
         // Schedule a message to be published. Messages are automatically batched.
         ApiFuture<String> future = publisher.publish(pubsubMessage);
@@ -69,7 +74,7 @@ public class PublisherExample_03 {
       List<String> messageIds = ApiFutures.allAsList(futures).get();
 
       for (String messageId : messageIds) {
-        System.out.println(messageId);
+        System.out.println("Id del mesanje obtenido: " + messageId);
       }
 
       if (publisher != null) {
