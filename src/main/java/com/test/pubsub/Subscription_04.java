@@ -33,7 +33,7 @@ import java.io.FileInputStream;
 
 public class Subscription_04 {
 	private static final String PROJECT_ID = "findep-desarrollo-170215";
-	private static final String SUBSCRIPTION_ID = "gcr-vta";
+	private static final String SUBSCRIPTION_ID = "gcr-pago-sevicios-vta";
 
 	static class MessageReceiverExample implements MessageReceiver {
 

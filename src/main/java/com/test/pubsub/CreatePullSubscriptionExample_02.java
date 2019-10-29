@@ -36,7 +36,7 @@ import java.io.FileInputStream;
 public class CreatePullSubscriptionExample_02 {
   private static final String PROJECT_ID = "findep-desarrollo-170215";
   private static final String TOPIC_ID = "PagoSeviciosVTA";
-  private static final String SUBSCRIPTION_ID = "gcr-vta";
+  private static final String SUBSCRIPTION_ID = "gcr-pago-sevicios-vta";
 
   /**
    * Create a pull subscription.
