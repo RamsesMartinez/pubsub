@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.fygsolutions.test.pubsub;
+package com.test.pubsub;
 
 
 // [START pubsub_quickstart_create_topic]
@@ -35,8 +35,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class CreateTopic_01 {
-  private static final String PROJECT_ID = "fintech-desarrollo-mx";
-  private static final String TOPIC_ID = "vta-topic-test";
+  private static final String PROJECT_ID = "findep-desarrollo-170215";
+  private static final String TOPIC_ID = "PagoSeviciosVTA";
 
   public static void main(String... args) throws IOException {
     createTopic();
@@ -50,7 +50,7 @@ public class CreateTopic_01 {
   private static void createTopic() throws IOException {
     CredentialsProvider credentialsProvider = FixedCredentialsProvider.create(
             ServiceAccountCredentials.fromStream(
-                    new FileInputStream("C:\\fintech-desarrollo-mx-pubsub.json")));
+                    new FileInputStream("C:\\findep-desarrollo-170215-bc6001bfa109.json")));
 
     // Create a new topic
     ProjectTopicName projectTopicName = ProjectTopicName.of(PROJECT_ID, TOPIC_ID);
@@ -67,11 +67,15 @@ public class CreateTopic_01 {
       System.out.println(e.getStatusCode().getCode());
       System.out.println(e.isRetryable());
       System.out.println("Intentando eliminar Topico");
-      try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+      try (TopicAdminClient topicAdminClient = TopicAdminClient.create(
+              TopicAdminSettings.newBuilder()
+                      .setCredentialsProvider(credentialsProvider)
+                      .build()
+      )) {
         ProjectTopicName topicName = ProjectTopicName.of(PROJECT_ID, TOPIC_ID);
         System.out.println(topicName);
         topicAdminClient.deleteTopic(topicName);
-        System.out.println("Creando tópico después de borrado " + topicName.toString());
+        System.out.println("Creando tópico después de borrado :: " + topicName.toString());
         createTopic();
       } catch (PermissionDeniedException ex) {
         System.out.println(ex.getMessage());

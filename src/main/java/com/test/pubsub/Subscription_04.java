@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.fygsolutions.test.pubsub;
+package com.test.pubsub;
 
 // [START pubsub_quickstart_subscriber]
 
@@ -32,8 +32,8 @@ import com.google.pubsub.v1.PubsubMessage;
 import java.io.FileInputStream;
 
 public class Subscription_04 {
-	private static final String PROJECT_ID = "fintech-desarrollo-mx";
-	private static final String SUBSCRIPTION_ID = "vta-pull-subscription";
+	private static final String PROJECT_ID = "findep-desarrollo-170215";
+	private static final String SUBSCRIPTION_ID = "gcr-vta";
 
 	static class MessageReceiverExample implements MessageReceiver {
 
@@ -49,17 +49,15 @@ public class Subscription_04 {
 	/** Receive messages over a subscription. */
 	public static void main(String... args) throws Exception {
 		ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(PROJECT_ID, SUBSCRIPTION_ID);
-		Subscriber subscriber = null;
 		try {
 			CredentialsProvider credentialsProvider = FixedCredentialsProvider.create(
 					ServiceAccountCredentials.fromStream(
-							new FileInputStream("C:\\fintech-desarrollo-mx-pubsub.json")));
+							new FileInputStream("C:\\findep-desarrollo-170215-bc6001bfa109.json")));
 
 			// create a subscriber bound to the asynchronous message receiver
-			subscriber =
-					Subscriber.newBuilder(subscriptionName, new MessageReceiverExample())
-							.setCredentialsProvider(credentialsProvider)
-							.build();
+			Subscriber subscriber = Subscriber.newBuilder(subscriptionName, new MessageReceiverExample())
+					.setCredentialsProvider(credentialsProvider)
+					.build();
 			subscriber.startAsync().awaitRunning();
 			// Allow the subscriber to run indefinitely unless an unrecoverable error occurs.
 			subscriber.awaitTerminated();

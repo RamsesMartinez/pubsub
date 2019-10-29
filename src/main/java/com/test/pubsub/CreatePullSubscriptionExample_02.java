@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.fygsolutions.test.pubsub;
+package com.test.pubsub;
 
 
 // [START pubsub_quickstart_create_subscription]
@@ -34,9 +34,9 @@ import com.google.pubsub.v1.Subscription;
 import java.io.FileInputStream;
 
 public class CreatePullSubscriptionExample_02 {
-  private static final String PROJECT_ID = "fintech-desarrollo-mx";
-  private static final String TOPIC_ID = "vta-topic-test";
-  private static final String SUBSCRIPTION_ID = "vta-pull-subscription";
+  private static final String PROJECT_ID = "findep-desarrollo-170215";
+  private static final String TOPIC_ID = "PagoSeviciosVTA";
+  private static final String SUBSCRIPTION_ID = "gcr-vta";
 
   /**
    * Create a pull subscription.
@@ -49,7 +49,7 @@ public class CreatePullSubscriptionExample_02 {
 
     CredentialsProvider credentialsProvider = FixedCredentialsProvider.create(
             ServiceAccountCredentials.fromStream(
-                    new FileInputStream("C:\\fintech-desarrollo-mx-pubsub.json")));
+                    new FileInputStream("C:\\findep-desarrollo-170215-bc6001bfa109.json")));
 
     // Create a new subscription
     ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(
@@ -60,17 +60,17 @@ public class CreatePullSubscriptionExample_02 {
                     .setCredentialsProvider(credentialsProvider)
                     .build()
     )) {
+
       // create a pull subscription with default acknowledgement deadline (= 10 seconds)
       Subscription subscription =
           subscriptionAdminClient.createSubscription(
-              subscriptionName, topicName, PushConfig.getDefaultInstance(), 0);
+                  subscriptionName, topicName, PushConfig.getDefaultInstance(), 0);
       System.out.printf(
           "Subscription %s:%s created.\n",
-          subscriptionName.getProject(), subscriptionName.getSubscription());
+              subscriptionName.getProject(), subscriptionName.getSubscription());
     } catch (ApiException e) {
       // example : code = ALREADY_EXISTS(409) implies subscription already exists
       System.out.print(e.getStatusCode().getCode());
-      System.out.println(" ");
       System.out.print(e.isRetryable());
     }
 

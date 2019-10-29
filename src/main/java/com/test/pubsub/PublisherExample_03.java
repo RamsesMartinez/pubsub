@@ -1,4 +1,4 @@
-package com.fygsolutions.test.pubsub;
+package com.test.pubsub;
 
 /*
  * Copyright 2017 Google Inc.
@@ -34,8 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PublisherExample_03 {
-  private static final String PROJECT_ID = "fintech-desarrollo-mx";
-  private static final String TOPIC_ID = "vta-topic-test";
+  private static final String PROJECT_ID = "findep-desarrollo-170215";
+  private static final String TOPIC_ID = "PagoSeviciosVTA";
 
   /** Publish messages to a topic.
    * @param args topic name, number of messages
@@ -46,7 +46,7 @@ public class PublisherExample_03 {
     ProjectTopicName topicName = ProjectTopicName.of(PROJECT_ID, TOPIC_ID);
     CredentialsProvider credentialsProvider = FixedCredentialsProvider.create(
             ServiceAccountCredentials.fromStream(
-                    new FileInputStream("C:\\fintech-desarrollo-mx-pubsub.json")));
+                    new FileInputStream("C:\\findep-desarrollo-170215-bc6001bfa109.json")));
     Publisher publisher = null;
     List<ApiFuture<String>> futures = new ArrayList<>();
 
