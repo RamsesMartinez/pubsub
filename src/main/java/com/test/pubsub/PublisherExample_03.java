@@ -1,4 +1,4 @@
-package com.fygsolutions.test.pubsub;
+package com.test.pubsub;
 
 /*
  * Copyright 2017 Google Inc.

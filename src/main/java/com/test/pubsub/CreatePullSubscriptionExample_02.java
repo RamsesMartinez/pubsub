@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.fygsolutions.test.pubsub;
+package com.test.pubsub;
 
 
 // [START pubsub_quickstart_create_subscription]
@@ -60,17 +60,17 @@ public class CreatePullSubscriptionExample_02 {
                     .setCredentialsProvider(credentialsProvider)
                     .build()
     )) {
+
       // create a pull subscription with default acknowledgement deadline (= 10 seconds)
       Subscription subscription =
           subscriptionAdminClient.createSubscription(
-              subscriptionName, topicName, PushConfig.getDefaultInstance(), 0);
+                  subscriptionName, topicName, PushConfig.getDefaultInstance(), 0);
       System.out.printf(
           "Subscription %s:%s created.\n",
-          subscriptionName.getProject(), subscriptionName.getSubscription());
+              subscriptionName.getProject(), subscriptionName.getSubscription());
     } catch (ApiException e) {
       // example : code = ALREADY_EXISTS(409) implies subscription already exists
       System.out.print(e.getStatusCode().getCode());
-      System.out.println(" ");
       System.out.print(e.isRetryable());
     }
 
